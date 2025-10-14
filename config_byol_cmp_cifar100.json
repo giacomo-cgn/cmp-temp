@@ -1,0 +1,37 @@
+{
+    "common_params":
+    {
+        "gpu-idx": 0,
+        "dataset": "cifar100",
+        "save-folder": "./logs",
+        "tr-mb-size": 10,
+        "repl-mb-size": 90,
+        "eval-mb-size": 256,
+        "epochs": 1,
+        "probing-separate": false,
+        "probing-torch": false,
+        "probing-rr": false,
+        "probing-all-exp": false,
+        "mb-passes": 1,
+        "max-process": 4
+
+    },
+    "experiments":
+    [
+        {
+            "multiple_runs":{
+                "seeds": [41, 42, 43]
+            },
+            "model": "byol_cmp",
+            "strategy" : "no_strategy",
+            "num-views": 20,
+            "multipatch": true,
+            "online-transforms-type": "none",
+            "num-views-eval": 16,
+            "lr": 0.1,
+            "tcr-strength": 5,
+            "alpha-multipatch": 750
+        }
+        
+    ]
+}
