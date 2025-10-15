@@ -10,7 +10,7 @@ from src.get_datasets import get_benchmark, get_iid_dataset, get_downstream_benc
 from src.probing import exec_probing, ProbingSklearn, ProbingPytorch, ProbingMultipatch
 from src.backbones import get_encoder
 
-from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE, SimSiamCMP, BYOLCMP, recover_ssl_model
+from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE, SimSiamCMP, BYOLCMP, SimCLRCMP, recover_ssl_model
 
 from src.strategies import NoStrategy, Replay, LUMP, MinRed, CaSSLe, CaSSLeR, ReplayEMP
 from src.standalone_strategies import SCALE, OsirisR
@@ -261,6 +261,14 @@ def exec_experiment(**kwargs):
                              dim_proj=kwargs["dim_proj"], temperature=kwargs["simclr_temp"],
                              save_pth=save_pth)
             num_views = 2
+
+        elif kwargs["model"] == 'simclr_cmp':
+            ssl_model = SimCLRCMP(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                 dim_proj=kwargs["dim_proj"], temperature=kwargs["simclr_temp"],
+                                 n_patches=kwargs["num_views"], tcr_strength=kwargs["tcr_strength"],
+                                 alpha_multipatch=kwargs["alpha_multipatch"],
+                                 save_pth=save_pth)
+            num_views = kwargs["num_views"]
 
         elif kwargs["model"] == 'emp':
             ssl_model = EMP(base_encoder=encoder, dim_backbone_features=dim_encoder_features,

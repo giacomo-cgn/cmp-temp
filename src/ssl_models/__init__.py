@@ -9,6 +9,7 @@ from .simclr import SimCLR
 from .emp import EMP
 from .mae import MAE
 from .simsiam_cmp import SimSiamCMP
+from .simclr_cmp import SimCLRCMP
 from .byol_cmp import BYOLCMP
 from .abstract_ssl_model import AbstractSSLModel
 
