@@ -71,6 +71,6 @@ with open(original_args.config_path) as f:
                     multiple_runs(args, seeds, parent_log_folder=log_dir, experiment_name=name)
                 else:
                     # Single run
-                    original_args.__setattr__('save-folder', log_dir)
-                    original_args.__setattr__('save_folder', log_dir)
-                    exec_experiment(**original_args.__dict__)
+                    args.__setattr__('save-folder', log_dir)
+                    args.__setattr__('save_folder', log_dir)
+                    exec_experiment(**args.__dict__)
