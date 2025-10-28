@@ -194,7 +194,7 @@ def exec_experiment(**kwargs):
             raise Exception(f"Buffer type {kwargs['buffer_type']} is only compatible with strategy 'replay_emp'")
         
         buffer = get_buffer(buffer_type=kwargs["buffer_type"], mem_size=kwargs["mem_size"],
-                            alpha_ema=kwargs["features_buffer_ema"], fifo_buffer_ratio=kwargs["fifo_buffer_ratio"],
+                            alpha_ema=kwargs["features_buffer_ema"],
                             device=device)
 
         # Save buffer configs
