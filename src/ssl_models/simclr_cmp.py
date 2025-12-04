@@ -97,10 +97,8 @@ class SimCLRCMP(nn.Module, AbstractSSLModel):
 
         # Compute similarity matrix between all normalized projections and average projections (no mask needed)
         sim_matrix_avg = torch.exp(torch.mm(z_norm, z_avg_norm.t().contiguous()) / self.temperature) # [B*n_patches, B]
-        # _plot_matrix(sim_matrix_avg, f"sim_matrix_avg {tuple(sim_matrix_avg.shape)}", fname_prefix='sim_matrix_avg')
         # Compute similarity matrix between all normalized projections (will need mask)
         sim_matrix = torch.exp(torch.mm(z_norm, z_norm.t().contiguous()) / self.temperature) # [B*n_patches, B*n_patches]
-        # _plot_matrix(sim_matrix, f"initial sim_matrix {tuple(sim_matrix.shape)}", fname_prefix='sim_matrix_init')
 
         # Mask the diagonal of each [B, B] block
         mask = torch.ones_like(sim_matrix).bool()
@@ -108,18 +106,12 @@ class SimCLRCMP(nn.Module, AbstractSSLModel):
         for i in range(self.n_patches):
             for j in range(self.n_patches):
                 mask[i*batch_size:(i+1)*batch_size, j*batch_size:(j+1)*batch_size] = eye_mask
-        # _plot_matrix(mask.float(), f"mask {tuple(mask.shape)}", fname_prefix='mask', cmap='gray')
         sim_matrix = sim_matrix.masked_select(mask).view(batch_size * self.n_patches, -1) # [B*n_patches, B*n_patches - n_patches]
-        # _plot_matrix(sim_matrix, f"masked sim_matrix {tuple(sim_matrix.shape)}", fname_prefix='sim_matrix_masked')
         # Concat the sim_matrix_avg and the masked sim_matrix
         sim_matrix = torch.cat([sim_matrix, sim_matrix_avg], dim=1) # [B*n_patches, B*n_patches - n_patches + B]
-        # _plot_matrix(sim_matrix, f"masked+avg sim_matrix {tuple(sim_matrix.shape)}", fname_prefix='sim_matrix_final')
 
         # Positive similarity (between each projection and the average projection of the corresponding sample)
         pos_sim = torch.exp(torch.sum(z_norm * z_avg_norm.repeat(self.n_patches, 1), dim=-1) / self.temperature) # [B*n_patches]
-        # _plot_matrix(pos_sim, f"pos_sim {tuple(pos_sim.shape)}", fname_prefix='pos_sim')
-
-        # _plot_matrix(sim_matrix.sum(dim=-1), f"sim_matrix sum {tuple(sim_matrix.sum(dim=-1).shape)}", fname_prefix='sim_matrix_sum')
 
         loss = (- torch.log(pos_sim / sim_matrix.sum(dim=-1))).mean()
         return loss
