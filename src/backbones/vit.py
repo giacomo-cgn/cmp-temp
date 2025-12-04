@@ -8,10 +8,21 @@ class PatchShuffle(torch.nn.Module):
     def __init__(self, ratio) -> None:
         super().__init__()
         self.ratio = ratio
+        self.inference_mode = False
+
+    def set_inference_mode(self, inference_mode=True):
+        """Enable or disable inference mode."""
+        self.inference_mode = inference_mode
 
     def forward(self, patches : torch.Tensor):
         T, B, C = patches.shape
         remain_T = int(T * (1 - self.ratio))
+
+        # Skip shuffling if in inference mode or ratio is 0
+        if self.inference_mode or self.ratio == 0:
+            forward_indexes = torch.arange(T).unsqueeze(-1).expand(T, B).to(patches.device)
+            backward_indexes = forward_indexes.clone()
+            return patches, forward_indexes, backward_indexes
 
         indexes = [random_indexes(T) for _ in range(B)]
         forward_indexes = torch.as_tensor(np.stack([i[0] for i in indexes], axis=-1), dtype=torch.long).to(patches.device)
@@ -81,6 +92,10 @@ class ViT(torch.nn.Module):
     def init_mask_ratio(self, mask_ratio=0.75):
         self.shuffle = PatchShuffle(mask_ratio)
 
+    def set_inference_mode(self, inference_mode=True):
+        """Set the model to inference mode by disabling masking."""
+        self.shuffle.set_inference_mode(inference_mode)
+
     def init_weight(self):
         trunc_normal_(self.cls_token, std=.02)
         trunc_normal_(self.pos_embedding, std=.02)
@@ -109,6 +124,8 @@ class ViTFeaturesWrapper(torch.nn.Module):
         self.encoder = encoder
         # Return avg pooling of transformer token outputs, otherwise only return clf token
         self.return_avg_pooling = return_avg_pooling
+        # Set encoder to inference mode
+        self.encoder.set_inference_mode()
     def forward(self, x):
         features, _ = self.encoder(x)
         features = rearrange(features, 't b c -> b t c')

@@ -175,6 +175,14 @@ def get_transforms_byol(dataset: str = 'cifar100'):
         ]
     return all_transforms
 
+def get_transforms_mae(dataset: str = 'cifar100'):
+    """Returns MAE augmentations with dataset specific crop."""
+    all_transforms = [
+            get_dataset_crop(dataset),
+            transforms.RandomHorizontalFlip(),
+        ]
+    return all_transforms
+
 def get_transforms_emp(dataset: str = 'cifar100'):
     """Returns EMP augmentations with dataset specific crop."""
     normalize = transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])
@@ -233,6 +241,12 @@ def get_transforms(dataset: str, model: str, n_crops: int = 2):
     elif model in ['emp', 'simsiam_cmp', 'byol_cmp']:
         all_transforms = get_transforms_emp(dataset) 
 
+    elif model == "mae":
+        all_transforms = get_transforms_mae(dataset)
+
+    elif model == "mae_cmp":
+        all_transforms = get_transforms_mae(dataset)
+
     elif model == "common":
         all_transforms = get_common_transforms(dataset)
 
@@ -263,6 +277,29 @@ class MultiPatchTransforms(object):
             transforms.RandomGrayscale(p=0.2),
             GBlur(p=0.1),
             transforms.RandomApply([Solarization()], p=0.1),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ])
+
+        augmented_x = [aug_transform(x) for i in range(self.num_patch)]
+        return augmented_x
+    
+
+class MultiPatchMAETransforms(object):
+    """Multipatch augmented views generator to be applied on dataset for MAE training."""
+    def __init__(self, num_patch = 2, dataset_name = 'cifar100'):
+        self.num_patch = num_patch
+        if dataset_name in ['cifar10', 'cifar100']:
+            self.crop = transforms.RandomCrop(32, padding=4)
+        elif dataset_name in ['imagenet', 'imagenet100', 'clear100']:
+            self.crop = transforms.RandomResizedCrop(224, scale=(0.2, 1.0), interpolation=3)
+        else:
+            raise ValueError(f"Dataset {dataset_name} not supported in MultiPatchMAETransforms crop selection.")
+        
+    def __call__(self, x):
+        aug_transform =  transforms.Compose([
+            self.crop,
+            transforms.RandomHorizontalFlip(p=0.5),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
         ])

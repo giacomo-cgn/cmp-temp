@@ -19,7 +19,8 @@
     "experiments":
     [
         {
-            "model": "simclr_cmp",
+            "encoder": "vit_tiny",
+            "model": "mae_cmp",
             "strategy" : "no_strategy",
             "num-views": 20,
             "multipatch": true,
@@ -27,7 +28,9 @@
             "num-views-eval": 16,
             "lr": 0.1,
             "tcr-strength": 3,
-            "alpha-multipatch": 100
+            "alpha-multipatch": 100,
+            "mae-cmp-omega-recon": 0.0,
+            "mae-cmp-omega-contr": 0.0
         }
         
     ]

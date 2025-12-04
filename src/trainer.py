@@ -58,7 +58,7 @@ class Trainer():
         if self.online_transforms_type == 'common':
             self.transforms = get_transforms(dataset=self.dataset_name, model='common')
         elif self.online_transforms_type == 'model':
-            self.transforms = get_transforms(dataset=self.dataset_name, model=self.strategy_name)
+            self.transforms = get_transforms(dataset=self.dataset_name, model=self.ssl_model.get_name())
         elif self.online_transforms_type == 'none':
             self.transforms = None
         else:

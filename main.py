@@ -10,7 +10,7 @@ from src.get_datasets import get_benchmark, get_iid_dataset, get_downstream_benc
 from src.probing import exec_probing, ProbingSklearn, ProbingPytorch, ProbingMultipatch
 from src.backbones import get_encoder
 
-from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE, SimSiamCMP, BYOLCMP, SimCLRCMP, recover_ssl_model
+from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE, SimSiamCMP, BYOLCMP, SimCLRCMP, MAECMP, recover_ssl_model
 
 from src.strategies import NoStrategy, Replay, LUMP, MinRed, CaSSLe, CaSSLeR, ReplayEMP
 from src.standalone_strategies import SCALE, OsirisR
@@ -292,6 +292,16 @@ def exec_experiment(**kwargs):
                             decoder_layer=kwargs["mae_decoder_layer"], decoder_head=kwargs["mae_decoder_head"],
                             mask_ratio=kwargs["mae_mask_ratio"], save_pth=save_pth)
             num_views = 1
+
+        elif kwargs["model"] == 'mae_cmp':
+            ssl_model = MAECMP(vit_encoder=encoder,
+                            image_size=image_size, patch_size=kwargs["mae_patch_size"], emb_dim=kwargs["mae_emb_dim"],
+                            decoder_layer=kwargs["mae_decoder_layer"], decoder_head=kwargs["mae_decoder_head"],
+                            mask_ratio=kwargs["mae_mask_ratio"], num_views=kwargs["num_views"], use_projector=kwargs["mae_cmp_use_proj"],
+                            dim_proj=kwargs["dim_proj"], tcr_strength=kwargs["tcr_strength"], alpha_multipatch=kwargs["alpha_multipatch"],
+                            omega_contr=kwargs["mae_cmp_omega_contr"], omega_recon=kwargs["mae_cmp_omega_recon"],
+                            save_pth=save_pth)
+            num_views = kwargs["num_views"]
             
         else:
             raise Exception(f'Invalid model {kwargs["model"]}') 

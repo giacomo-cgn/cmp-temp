@@ -186,6 +186,10 @@ def read_command_line_args():
     parser.add_argument('--num-views-eval', type=int, default=1) # num_views used for multipatch probing
     parser.add_argument('--tcr-strength', type=float, default=0.005)
     parser.add_argument('--alpha-multipatch', type=float, default=200)
+    # MAE-CMP
+    parser.add_argument('--mae-cmp-omega-recon', type=float, default=1.0)
+    parser.add_argument('--mae-cmp-omega-contr', type=float, default=1.0)
+    parser.add_argument('--mae-cmp-use-proj', type=str_to_bool, default=True)
 
 
     # Align params

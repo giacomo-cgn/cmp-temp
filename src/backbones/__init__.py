@@ -92,7 +92,7 @@ def get_encoder(encoder_name, image_size, ssl_model_name, vit_avg_pooling,
         else:
             raise Exception(f'Invalid image size for ViT backbone: {image_size}')
         dim_encoder_features = encoder.emb_dim
-        if not ssl_model_name == 'mae':
+        if not ssl_model_name in ['mae', 'mae_cmp']:
             print("strategy name:", ssl_model_name)
             # Wrap to return only 1 feature tensor
             encoder = encoder.return_features_wrapper()
