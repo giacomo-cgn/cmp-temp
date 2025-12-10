@@ -2,16 +2,18 @@
     "common_params":
     {
         "gpu-idx": 0,
-        "dataset": "cifar100",
+        "dataset": "cifar10",
         "save-folder": "./logs",
+        "num-exps": 5,
         "tr-mb-size": 10,
         "repl-mb-size": 90,
         "eval-mb-size": 256,
         "epochs": 1,
+        "probe-lr": 0.5,
         "probing-separate": false,
-        "probing-torch": false,
+        "probing-torch": true,
         "probing-rr": false,
-        "probing-all-exp": false,
+        "probing-all-exp": true,
         "mb-passes": 1,
         "max-process": 4
 
@@ -20,17 +22,11 @@
     [
         {
             "encoder": "vit_tiny",
-            "model": "mae_cmp",
-            "strategy" : "no_strategy",
-            "num-views": 20,
-            "multipatch": true,
-            "online-transforms-type": "none",
-            "num-views-eval": 16,
-            "lr": 0.1,
-            "tcr-strength": 3,
-            "alpha-multipatch": 100,
-            "mae-cmp-omega-recon": 0.0,
-            "mae-cmp-omega-contr": 0.0
+            "model": "mae",
+            "strategy" : "replay",
+            "buffer-type": "reservoir",
+            "mem-size": 2000,
+            "lr": 0.01
         }
         
     ]

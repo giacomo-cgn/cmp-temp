@@ -15,7 +15,6 @@ class MAE(torch.nn.Module, AbstractSSLModel):
     def __init__(self,
                  vit_encoder = ViT,
                  image_size: int = 32,
-                 patch_size: int = 2,
                  emb_dim: int = 192, 
                  decoder_layer: int = 4,
                  decoder_head: int = 3,
@@ -26,13 +25,15 @@ class MAE(torch.nn.Module, AbstractSSLModel):
 
         self.emb_dim = emb_dim
         self.encoder = vit_encoder
+        self.patch_size = self.encoder.patch_size
+
         self.encoder.init_mask_ratio(mask_ratio)
-        self.decoder = MAE_Decoder(image_size, patch_size, emb_dim, decoder_layer, decoder_head)
+        self.decoder = MAE_Decoder(image_size, self.patch_size, emb_dim, decoder_layer, decoder_head)
 
         self.mask_ratio = mask_ratio
         self.save_pth = save_pth
 
-        self.num_patches = (image_size // patch_size) ** 2
+        self.num_patches = (image_size // self.patch_size) ** 2
 
         self.model_name = 'mae'
 
@@ -49,7 +50,6 @@ class MAE(torch.nn.Module, AbstractSSLModel):
                 f.write('---- SSL MODEL CONFIG ----\n')
                 f.write(f'MODEL: {self.model_name}\n')
                 f.write(f'image_size: {image_size}\n')
-                f.write(f'patch_size: {patch_size}\n')
                 f.write(f'emb_dim: {emb_dim}\n')
                 f.write(f'decoder_layer: {decoder_layer}\n')
                 f.write(f'decoder_head: {decoder_head}\n')

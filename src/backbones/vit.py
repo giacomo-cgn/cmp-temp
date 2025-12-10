@@ -57,6 +57,7 @@ class ViT(torch.nn.Module):
         super(ViT, self).__init__()
 
         self.emb_dim = emb_dim
+        self.patch_size = patch_size
         self.return_average_pooling = return_avg_pooling
         self.save_pth = save_pth
 
@@ -92,9 +93,18 @@ class ViT(torch.nn.Module):
     def init_mask_ratio(self, mask_ratio=0.75):
         self.shuffle = PatchShuffle(mask_ratio)
 
-    def set_inference_mode(self, inference_mode=True):
-        """Set the model to inference mode by disabling masking."""
-        self.shuffle.set_inference_mode(inference_mode)
+    def train(self, mode: bool = True):
+        """Override train method to automatically toggle inference mode."""
+        super().train(mode)        
+        if mode:
+            print("SWITCHING VIT TO TRAINING MODE")
+            # Training mode: enable masking (inference_mode=False)
+            self.shuffle.set_inference_mode(False)
+        else:
+            print("SWITCHING VIT TO EVAL MODE")
+            # Eval mode: disable masking (inference_mode=True)
+            self.shuffle.set_inference_mode(True)
+        return self
 
     def init_weight(self):
         trunc_normal_(self.cls_token, std=.02)
@@ -119,13 +129,13 @@ class ViT(torch.nn.Module):
     
 
 class ViTFeaturesWrapper(torch.nn.Module):
-    def __init__(self, encoder, return_avg_pooling=False):
+    def __init__(self, encoder:ViT, return_avg_pooling=False):
         super().__init__()
         self.encoder = encoder
         # Return avg pooling of transformer token outputs, otherwise only return clf token
         self.return_avg_pooling = return_avg_pooling
         # Set encoder to inference mode
-        self.encoder.set_inference_mode()
+        self.encoder.shuffle.set_inference_mode(True)
     def forward(self, x):
         features, _ = self.encoder(x)
         features = rearrange(features, 't b c -> b t c')

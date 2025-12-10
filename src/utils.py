@@ -253,7 +253,6 @@ def read_command_line_args():
     parser.add_argument('--simclr-temp', type=float, default=0.5)
     
     # MAE params
-    parser.add_argument('--mae-patch-size', type=int, default=2)                
     parser.add_argument('--mae-emb-dim', type=int, default=192)
     parser.add_argument('--mae-decoder-layer', type=int, default=4)                
     parser.add_argument('--mae-decoder-head', type=int, default=3)

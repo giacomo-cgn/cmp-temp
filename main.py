@@ -288,7 +288,7 @@ def exec_experiment(**kwargs):
 
         elif kwargs["model"] == 'mae':
             ssl_model = MAE(vit_encoder=encoder,
-                            image_size=image_size, patch_size=kwargs["mae_patch_size"], emb_dim=kwargs["mae_emb_dim"],
+                            image_size=image_size, emb_dim=kwargs["mae_emb_dim"],
                             decoder_layer=kwargs["mae_decoder_layer"], decoder_head=kwargs["mae_decoder_head"],
                             mask_ratio=kwargs["mae_mask_ratio"], save_pth=save_pth)
             num_views = 1
@@ -443,7 +443,11 @@ def exec_experiment(**kwargs):
         
     elif kwargs["no_train"]:
         # No SSL training is done, only using the randomly initialized encoder as feature extractor
-        exec_probing(kwargs=kwargs, probes=probes, probing_benchmark=probing_benchmark, encoder=encoder, pretr_exp_idx=0,
+        if kwargs["encoder"] in ['vit_tiny']:
+            encoder_for_probing = encoder.return_features_wrapper()
+        else:
+            encoder_for_probing = encoder
+        exec_probing(kwargs=kwargs, probes=probes, probing_benchmark=probing_benchmark, encoder=encoder_for_probing, pretr_exp_idx=0,
                      probing_tr_ratio_arr=probing_tr_ratio_arr, save_pth=save_pth)
 
     else:

@@ -174,7 +174,7 @@ class Trainer():
                                          pretr_exp_idx=eval_idx, probing_tr_ratio_arr=iid_intermediate_eval_dict["probing_tr_ratio_arr"],
                                          save_pth=self.save_pth)
                             eval_idx += 1
-                    self.ssl_model.train()
+                        self.ssl_model.train()
 
                 self.strategy.after_mb_passes()
 
