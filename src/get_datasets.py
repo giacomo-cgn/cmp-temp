@@ -1,4 +1,4 @@
-from .transforms import get_dataset_transforms, MultiPatchTransforms
+from .transforms import get_dataset_transforms, MultiPatchTransforms, MultiPatchMAETransforms
 import random
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -12,7 +12,7 @@ from torchvision.datasets import SVHN, StanfordCars
 from .clear_dataset import CLEAR
 
 from .benchmark import Benchmark
-def get_benchmark(dataset_name, dataset_root, num_exps=20, seed=42, val_ratio=0.1, evaluation_protocol_clear='iid', transforms='default', num_views=2):
+def get_benchmark(dataset_name, dataset_root, num_exps=20, seed=42, val_ratio=0.1, evaluation_protocol_clear='iid', transforms='default', num_views=2, strategy_name=None):
 
     return_task_id = False
     shuffle = True
@@ -23,9 +23,17 @@ def get_benchmark(dataset_name, dataset_root, num_exps=20, seed=42, val_ratio=0.
         train_transform = get_dataset_transforms(dataset_name)
         eval_transform = get_dataset_transforms(dataset_name)
     elif transforms == 'multipatch':
-        # Transforms for multipatch training and evaluation
-        train_transform = MultiPatchTransforms(num_patch=num_views, dataset_name=dataset_name)
-        eval_transform = MultiPatchTransforms(num_patch=num_views, dataset_name=dataset_name)
+        if strategy_name == 'mae_cmp':
+            # Transforms for multipatch MAE training and evaluation
+            print('Using MultiPatchMAETransforms for training and evaluation')
+            train_transform = MultiPatchMAETransforms(num_patch=num_views, dataset_name=dataset_name)
+            eval_transform = MultiPatchMAETransforms(num_patch=num_views, dataset_name=dataset_name)
+        else:
+            # Transforms for multipatch training and evaluation
+            print('Using MultiPatchTransforms for training and evaluation')
+            train_transform = MultiPatchTransforms(num_patch=num_views, dataset_name=dataset_name)
+            eval_transform = MultiPatchTransforms(num_patch=num_views, dataset_name=dataset_name)
+    
 
     if dataset_name == 'cifar100':
         benchmark = SplitCIFAR100(

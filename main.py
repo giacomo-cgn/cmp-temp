@@ -119,6 +119,7 @@ def exec_experiment(**kwargs):
             evaluation_protocol_clear=kwargs["evaluation_protocol_clear"],
             transforms="multipatch",
             num_views=kwargs["num_views"],
+            strategy_name=kwargs["strategy"],
         )
         if kwargs["iid"]:
             iid_tr_dataset = get_iid_dataset(benchmark)
@@ -132,6 +133,7 @@ def exec_experiment(**kwargs):
             evaluation_protocol_clear=kwargs["evaluation_protocol_clear"],
             transforms="multipatch",
             num_views=kwargs["num_views_eval"],
+            strategy_name=kwargs["strategy"],
         )
 
     # Downstream
@@ -295,7 +297,7 @@ def exec_experiment(**kwargs):
 
         elif kwargs["model"] == 'mae_cmp':
             ssl_model = MAECMP(vit_encoder=encoder,
-                            image_size=image_size, patch_size=kwargs["mae_patch_size"], emb_dim=kwargs["mae_emb_dim"],
+                            image_size=image_size, emb_dim=kwargs["mae_emb_dim"],
                             decoder_layer=kwargs["mae_decoder_layer"], decoder_head=kwargs["mae_decoder_head"],
                             mask_ratio=kwargs["mae_mask_ratio"], num_views=kwargs["num_views"], use_projector=kwargs["mae_cmp_use_proj"],
                             dim_proj=kwargs["dim_proj"], tcr_strength=kwargs["tcr_strength"], alpha_multipatch=kwargs["alpha_multipatch"],
