@@ -299,12 +299,7 @@ class MultiPatchMAETransforms(object):
     def __call__(self, x):
         aug_transform =  transforms.Compose([
             self.crop,
-            # transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.2)], p=0.8),
-            transforms.RandomGrayscale(p=0.2),
-            GBlur(p=0.1),
-            transforms.RandomApply([Solarization()], p=0.1),
-            # up to here new transforms
+            transforms.RandomHorizontalFlip(p=0.5),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
         ])
