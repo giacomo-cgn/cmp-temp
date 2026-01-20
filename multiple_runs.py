@@ -54,7 +54,7 @@ def multiple_runs(args, seeds, parent_log_folder='./logs', experiment_name=''):
           # Only row with probe_ratio = 1
           results_df = results_df[results_df['probe_ratio'] == 1]
           # Select preferred probe type
-          probe_type_preferences = ["torch", "rr", "knn"]
+          probe_type_preferences = ["multipatch", "torch", "rr", "knn"]
           for probe_type in probe_type_preferences:
                if probe_type in results_df["probe_type"].to_list():
                     results_df = results_df[results_df["probe_type"] == probe_type]
