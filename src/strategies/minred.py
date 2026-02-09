@@ -40,9 +40,12 @@ class MinRed(AbstractStrategy):
         # Skip if mb size == 1 (problems with batchnorm)
         if not len(stream_mbatch) == 1:
             with torch.no_grad():
-                e_mbatch = self.ssl_model.get_encoder()(stream_mbatch.detach())
+                encoder = self.ssl_model.get_encoder_for_eval()   
+                e_mbatch = encoder(stream_mbatch.detach())
                 z_mbatch = self.ssl_model.get_projector()(e_mbatch)
-
+                # If self.ssl_model is MAE, reset to training mode (to reactivate masking)
+                if hasattr(self.ssl_model.model_name, 'mae'):
+                    encoder.train(mode=True)
             # Add stream minibatch and features to buffer
             self.buffer.add(stream_mbatch.detach(), z_mbatch.detach())
 
