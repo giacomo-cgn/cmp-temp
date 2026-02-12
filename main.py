@@ -458,12 +458,12 @@ def exec_experiment(**kwargs):
         # Self supervised training over the experiences
         for exp_idx, exp_dataset in enumerate(benchmark.train_stream):
             print(f'==== Beginning self supervised training for experience: {exp_idx} ====')
+            t_start = time.time()
             trained_ssl_model = trainer.train_experience(exp_dataset, exp_idx)
+            tr_time += (time.time() - t_start)
             if kwargs["probing_all_exp"]:
-                t_start = time.time()
                 exec_probing(kwargs=kwargs, probes=probes, probing_benchmark=probing_benchmark, encoder=trained_ssl_model.get_encoder_for_eval(), 
                      pretr_exp_idx=exp_idx, probing_tr_ratio_arr=probing_tr_ratio_arr, save_pth=save_pth)
-                tr_time += (time.time() - t_start)
         with open(save_pth + '/times.txt', 'a') as f:
             f.write(f'Training time: {tr_time}')
             
