@@ -56,9 +56,9 @@ class Trainer():
 
          # Set up transforms
         if self.online_transforms_type == 'common':
-            self.transforms = get_transforms(dataset=self.dataset_name, model='common')
+            self.transforms = get_transforms(dataset=self.dataset_name, model='common', n_crops=self.num_views)
         elif self.online_transforms_type == 'model':
-            self.transforms = get_transforms(dataset=self.dataset_name, model=self.ssl_model.get_name())
+            self.transforms = get_transforms(dataset=self.dataset_name, model=self.ssl_model.get_name(), n_crops=self.num_views)
         elif self.online_transforms_type == 'none':
             self.transforms = None
         else:
@@ -137,13 +137,6 @@ class Trainer():
 
                     x_views_list = self.strategy.after_transforms(x_views_list)
 
-                    # Forward pass of SSL model (z: projector features, e: encoder features)
-                    loss, z_list, e_list = self.ssl_model(x_views_list)
-
-                    # Strategy after forward pass
-                    loss_strategy = self.strategy.after_forward(x_views_list, loss, z_list, e_list)
-
-                    x_views_list = self.strategy.after_transforms(x_views_list)
 
                     # Forward pass of SSL model (z: projector features, e: encoder features)
                     loss, z_list, e_list = self.ssl_model(x_views_list)
@@ -159,7 +152,6 @@ class Trainer():
 
                     self.ssl_model.after_backward()
                     self.strategy.after_backward()
-
                     # Save loss, exp_idx, epoch, mb_idx and k in csv
                     if self.save_pth is not None and loss_strategy is not None:
                         with open(os.path.join(self.save_pth, 'pretr_loss.csv'), 'a') as f:

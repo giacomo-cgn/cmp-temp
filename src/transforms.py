@@ -238,7 +238,7 @@ def get_transforms(dataset: str, model: str, n_crops: int = 2):
     elif model == "byol":
         all_transforms = get_transforms_byol(dataset)
 
-    elif model in ['emp', 'simsiam_cmp', 'byol_cmp']:
+    elif model in ['emp', 'simsiam_cmp', 'byol_cmp', 'simclr_cmp']:
         all_transforms = get_transforms_emp(dataset) 
 
     elif model == "mae":
