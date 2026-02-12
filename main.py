@@ -5,6 +5,7 @@ import datetime
 import tqdm as tqdm
 import numpy as np
 import pandas as pd
+import time
 
 from src.get_datasets import get_benchmark, get_iid_dataset, get_downstream_benchmark
 from src.probing import exec_probing, ProbingSklearn, ProbingPytorch, ProbingMultipatch
@@ -453,13 +454,19 @@ def exec_experiment(**kwargs):
                      probing_tr_ratio_arr=probing_tr_ratio_arr, save_pth=save_pth)
 
     else:
+        tr_time = 0
         # Self supervised training over the experiences
         for exp_idx, exp_dataset in enumerate(benchmark.train_stream):
             print(f'==== Beginning self supervised training for experience: {exp_idx} ====')
             trained_ssl_model = trainer.train_experience(exp_dataset, exp_idx)
             if kwargs["probing_all_exp"]:
+                t_start = time.time()
                 exec_probing(kwargs=kwargs, probes=probes, probing_benchmark=probing_benchmark, encoder=trained_ssl_model.get_encoder_for_eval(), 
                      pretr_exp_idx=exp_idx, probing_tr_ratio_arr=probing_tr_ratio_arr, save_pth=save_pth)
+                tr_time += (time.time() - t_start)
+        with open(save_pth + '/times.txt', 'a') as f:
+            f.write(f'Training time: {tr_time}')
+            
         if not kwargs["probing_all_exp"]:
             # Probe only at the end of training
             exec_probing(kwargs=kwargs, probes=probes, probing_benchmark=probing_benchmark, encoder=trained_ssl_model.get_encoder_for_eval(), 
