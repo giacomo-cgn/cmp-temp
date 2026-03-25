@@ -191,9 +191,9 @@ def get_transforms_emp(dataset: str = 'cifar100'):
         blur_kernel = 5
         crop = transforms.RandomResizedCrop(32,scale=(0.25, 0.25), ratio=(1,1))
         
-    elif dataset in ['imagenet', 'imagenet100']:
+    elif dataset in ['imagenet', 'imagenet100', 'clear100']:
         blur_kernel = 23 # Same as SwAV
-        transforms.RandomResizedCrop(224, scale=(0.25, 0.25),
+        crop = transforms.RandomResizedCrop(224, scale=(0.25, 0.25),
                                      interpolation=transforms.InterpolationMode.BICUBIC)
         
     
