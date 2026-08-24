@@ -13,7 +13,7 @@ from src.backbones import get_encoder
 
 from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE, SimSiamCMP, BYOLCMP, SimCLRCMP, MAECMP, recover_ssl_model
 
-from src.strategies import NoStrategy, Replay, LUMP, MinRed, CaSSLe, CaSSLeR, ReplayEMP
+from src.strategies import NoStrategy, Replay, LUMP, MinRed, CaSSLe, CaSSLeR, ReplayEMP, ReplayOnly
 from src.standalone_strategies import SCALE, OsirisR
 
 from src.trainer import Trainer
@@ -180,7 +180,7 @@ def exec_experiment(**kwargs):
     if not kwargs["strategy"] in buffer_free_strategies:
         if kwargs["buffer_type"] == "default":
             # Set default buffer for each strategy
-            if kwargs["strategy"] in ['replay', 'lump', 'osiris_r', 'cassle_r']:
+            if kwargs["strategy"] in ['replay', 'replay_only', 'lump', 'osiris_r', 'cassle_r']:
                 kwargs["buffer_type"] = "reservoir"
             elif kwargs["strategy"] == "minred":
                 kwargs["buffer_type"] = "minred"
@@ -327,6 +327,10 @@ def exec_experiment(**kwargs):
         elif kwargs["strategy"] == 'replay':
             strategy = Replay(ssl_model=ssl_model, device=device, save_pth=save_pth,
                             buffer=buffer, replay_mb_size=kwargs["repl_mb_size"])
+            
+        elif kwargs["strategy"] == 'replay_only':
+            strategy = ReplayOnly(ssl_model=ssl_model, device=device, save_pth=save_pth,
+                                buffer=buffer, replay_mb_size=kwargs["repl_mb_size"])
             
         elif kwargs["strategy"] == 'scale':
             pass

@@ -6,3 +6,4 @@ from .minred import MinRed
 from .cassle import CaSSLe
 from .cassle_r import CaSSLeR
 from .replay_emp import ReplayEMP
+from .replay_only import ReplayOnly
