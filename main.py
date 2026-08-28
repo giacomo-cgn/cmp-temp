@@ -11,7 +11,9 @@ from src.get_datasets import get_benchmark, get_iid_dataset, get_downstream_benc
 from src.probing import exec_probing, ProbingSklearn, ProbingPytorch, ProbingMultipatch
 from src.backbones import get_encoder
 
-from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE, SimSiamCMP, BYOLCMP, SimCLRCMP, MAECMP, recover_ssl_model
+from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE,\
+      SimSiamCMP, BYOLCMP, SimCLRCMP, MAECMP,\
+        SimSiamMultipatchPair, SimCLRMultipatchPair, BYOLMultipatchPair, recover_ssl_model
 
 from src.strategies import NoStrategy, Replay, LUMP, MinRed, CaSSLe, CaSSLeR, ReplayEMP, ReplayOnly
 from src.standalone_strategies import SCALE, OsirisR
@@ -230,6 +232,13 @@ def exec_experiment(**kwargs):
                                          save_pth=save_pth)
             num_views = kwargs["num_views"]
 
+        elif kwargs["model"] == 'simsiam_multipatch_pair':
+            ssl_model = SimSiamMultipatchPair(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                         dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
+                                         n_patches=kwargs["num_views"],
+                                         save_pth=save_pth)
+            num_views = kwargs["num_views"]
+
         elif kwargs["model"] == 'byol':
             ssl_model = BYOL(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
                              dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
@@ -241,6 +250,14 @@ def exec_experiment(**kwargs):
                                       dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
                                       byol_momentum=kwargs["byol_momentum"], return_momentum_encoder=kwargs["return_momentum_encoder"],
                                       n_patches=kwargs["num_views"], tcr_strength=kwargs["tcr_strength"], alpha_multipatch=kwargs["alpha_multipatch"],
+                                      save_pth=save_pth)
+            num_views = kwargs["num_views"]
+
+        elif kwargs["model"] == 'byol_multipatch_pair':
+            ssl_model = BYOLMultipatchPair(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                      dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
+                                      byol_momentum=kwargs["byol_momentum"], return_momentum_encoder=kwargs["return_momentum_encoder"],
+                                      n_patches=kwargs["num_views"],
                                       save_pth=save_pth)
             num_views = kwargs["num_views"]
             
@@ -270,6 +287,13 @@ def exec_experiment(**kwargs):
                                  dim_proj=kwargs["dim_proj"], temperature=kwargs["simclr_temp"],
                                  n_patches=kwargs["num_views"], tcr_strength=kwargs["tcr_strength"],
                                  alpha_multipatch=kwargs["alpha_multipatch"],
+                                 save_pth=save_pth)
+            num_views = kwargs["num_views"]
+
+        elif kwargs["model"] == 'simclr_multipatch_pair':
+            ssl_model = SimCLRMultipatchPair(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                 dim_proj=kwargs["dim_proj"], temperature=kwargs["simclr_temp"],
+                                 n_patches=kwargs["num_views"],
                                  save_pth=save_pth)
             num_views = kwargs["num_views"]
 
