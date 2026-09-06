@@ -55,10 +55,6 @@ class SimSiamMultipatchPair(nn.Module, AbstractSSLModel):
 
 
     def forward(self, x_views_list):
-
-        # Ensure that the number of views is even
-        assert len(x_views_list) % 2 == 0, "Number of views must be even for pair comparisons."
-
         x_views = torch.cat(x_views_list, dim=0)
 
         # Forward pass for all views
@@ -77,14 +73,18 @@ class SimSiamMultipatchPair(nn.Module, AbstractSSLModel):
         p_list = torch.stack(list(p_list), dim=0)
         z_list = torch.stack(list(z_list), dim=0)
         
-        # Compute SimSiam loss for consecutive view pairs:
-        # (0, 1), (2, 3), ..., (n_patches-2, n_patches-1)
+        # Compute SimSiam loss for consecutive complete pairs.
+        # If the number of views is odd, the last view is ignored.
+        num_pairs = num_patch // 2
+        if num_pairs == 0:
+            raise ValueError("At least 2 views are required for pair comparisons.")
+
         loss = 0
-        for i in range(0, num_patch, 2):
+        for i in range(0, num_pairs * 2, 2):
             loss += F.cosine_similarity(p_list[i], z_list[i+1], dim=1).mean()
             
         # Average over the number of pairs
-        loss = loss / (num_patch / 2)
+        loss = loss / num_pairs
 
         return loss, z_list, e_list
     
