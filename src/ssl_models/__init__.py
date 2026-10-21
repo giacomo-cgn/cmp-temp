@@ -15,6 +15,9 @@ from .mae_cmp import MAECMP
 from .simsiam_multipatch_pair import SimSiamMultipatchPair
 from .simclr_multipatch_pair import SimCLRMultipatchPair
 from .byol_multipatch_pair import BYOLMultipatchPair
+from .simclr_tcr import SimCLRTCR
+from .simsiam_tcr import SimSiamTCR
+from .byol_tcr import BYOLTCR
 from .abstract_ssl_model import AbstractSSLModel
 
 def recover_ssl_model(ssl_model: AbstractSSLModel, path: str) -> AbstractSSLModel:

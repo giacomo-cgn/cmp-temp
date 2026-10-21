@@ -13,6 +13,7 @@ from src.backbones import get_encoder
 
 from src.ssl_models import BarlowTwins, SimSiam, BYOL, MoCo, SimCLR, EMP, MAE,\
       SimSiamCMP, BYOLCMP, SimCLRCMP, MAECMP,\
+      SimSiamTCR, BYOLTCR, SimCLRTCR,\
         SimSiamMultipatchPair, SimCLRMultipatchPair, BYOLMultipatchPair, recover_ssl_model
 
 from src.strategies import NoStrategy, Replay, LUMP, MinRed, CaSSLe, CaSSLeR, ReplayEMP, ReplayOnly
@@ -239,6 +240,13 @@ def exec_experiment(**kwargs):
                                          save_pth=save_pth)
             num_views = kwargs["num_views"]
 
+        elif kwargs["model"] == 'simsiam_tcr':
+            ssl_model = SimSiamTCR(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                         dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
+                                         tcr_strength=kwargs["tcr_strength"],
+                                         save_pth=save_pth)
+            num_views = 2
+
         elif kwargs["model"] == 'byol':
             ssl_model = BYOL(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
                              dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
@@ -260,6 +268,14 @@ def exec_experiment(**kwargs):
                                       n_patches=kwargs["num_views"],
                                       save_pth=save_pth)
             num_views = kwargs["num_views"]
+
+        elif kwargs["model"] == 'byol_tcr':
+            ssl_model = BYOLTCR(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                      dim_proj=kwargs["dim_proj"], dim_pred=kwargs["dim_pred"],
+                                      byol_momentum=kwargs["byol_momentum"], return_momentum_encoder=kwargs["return_momentum_encoder"],
+                                      tcr_strength=kwargs["tcr_strength"],
+                                      save_pth=save_pth)
+            num_views = 2
             
         elif kwargs["model"] == 'barlow_twins':
             ssl_model = BarlowTwins(encoder=encoder, dim_backbone_features=dim_encoder_features,
@@ -296,6 +312,13 @@ def exec_experiment(**kwargs):
                                  n_patches=kwargs["num_views"],
                                  save_pth=save_pth)
             num_views = kwargs["num_views"]
+
+        elif kwargs["model"] == 'simclr_tcr':
+            ssl_model = SimCLRTCR(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
+                                 dim_proj=kwargs["dim_proj"], temperature=kwargs["simclr_temp"],
+                                 tcr_strength=kwargs["tcr_strength"],
+                                 save_pth=save_pth)
+            num_views = 2
 
         elif kwargs["model"] == 'emp':
             ssl_model = EMP(base_encoder=encoder, dim_backbone_features=dim_encoder_features,
