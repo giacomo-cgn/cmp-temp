@@ -59,6 +59,8 @@ class Trainer():
             self.transforms = get_transforms(dataset=self.dataset_name, model='common', n_crops=self.num_views)
         elif self.online_transforms_type == 'model':
             self.transforms = get_transforms(dataset=self.dataset_name, model=self.ssl_model.get_name(), n_crops=self.num_views)
+        elif self.online_transforms_type == 'cmp':
+            self.transforms = get_transforms(dataset=self.dataset_name, model='simsiam_cmp', n_crops=self.num_views)
         elif self.online_transforms_type == 'none':
             self.transforms = None
         else:
