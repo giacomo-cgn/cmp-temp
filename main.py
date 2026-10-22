@@ -81,6 +81,7 @@ def exec_experiment(**kwargs):
         f.write(f'Replay MB Size: {kwargs["repl_mb_size"]}\n')
         f.write(f'Online transforms type: {kwargs["online_transforms_type"]}\n')
         f.write(f'Multipatch: {kwargs["multipatch"]}\n')
+        f.write(f'Multipatch Probing: {kwargs["probing_multipatch"]}\n')
         f.write(f'Num Views: {kwargs["num_views"]}\n')
         f.write(f'IID pretraining: {kwargs["iid"]}\n')
         f.write(f'Save final model: {kwargs["save_model_final"]}\n')
@@ -128,6 +129,7 @@ def exec_experiment(**kwargs):
         if kwargs["iid"]:
             iid_tr_dataset = get_iid_dataset(benchmark)
 
+    if kwargs["multipatch"] or kwargs["probing_multipatch"]:
         benchmark_eval, _ = get_benchmark(
             dataset_name=kwargs["dataset"],
             dataset_root=kwargs["dataset_root"],
@@ -455,7 +457,7 @@ def exec_experiment(**kwargs):
                                  lr_patience=kwargs["probe_lr_patience"], lr_factor=kwargs["probe_lr_factor"],
                                  lr_min=kwargs["probe_lr_min"], probing_epochs=kwargs["probe_epochs"]))
         
-    if kwargs["multipatch"]:
+    if kwargs["multipatch"] or kwargs["probing_multipatch"]:
         probes.append(ProbingMultipatch(device=device, mb_size=kwargs["eval_mb_size"], config_save_pth=save_pth,
                                  dim_encoder_features=dim_encoder_features, lr=kwargs["probe_lr"],
                                  lr_patience=kwargs["probe_lr_patience"], lr_factor=kwargs["probe_lr_factor"],
@@ -465,8 +467,8 @@ def exec_experiment(**kwargs):
     if kwargs["downstream"]:
         # Using downstream as probing
         probing_benchmark = downstream_benchmark
-    elif kwargs["multipatch"]:
-        probing_benchmark = benchmark_eval # Temporary this way it does not work when mixing probe types
+    elif kwargs["multipatch"] or kwargs["probing_multipatch"]:
+        probing_benchmark = benchmark_eval # Temporary, this way it does not work when mixing probe types
     else:
         probing_benchmark = benchmark
 
